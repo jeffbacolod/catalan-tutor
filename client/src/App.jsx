@@ -3,6 +3,18 @@ import { useConversation } from './hooks/useConversation'
 import { useSpeechRecognition } from './hooks/useSpeechRecognition'
 import './App.css'
 
+function SenyeraFlag({ className = '' }) {
+  return (
+    <svg viewBox="0 0 270 180" xmlns="http://www.w3.org/2000/svg" className={`senyera ${className}`} aria-label="Catalan flag">
+      <rect width="270" height="180" fill="#FCDD09" />
+      <rect y="20" width="270" height="20" fill="#C60B1E" />
+      <rect y="60" width="270" height="20" fill="#C60B1E" />
+      <rect y="100" width="270" height="20" fill="#C60B1E" />
+      <rect y="140" width="270" height="20" fill="#C60B1E" />
+    </svg>
+  )
+}
+
 const LANG_CONFIG = {
   en: {
     label: 'English',
@@ -24,7 +36,7 @@ const LANG_CONFIG = {
   },
   ca: {
     label: 'Català',
-    flag: '🏴󠁥󠁳󠁣󠁴󠁿',
+    flag: <SenyeraFlag className="lang-btn__flag-svg" />,
     tagline: 'Parlo català',
     locale: 'ca-ES',
     placeholder: 'Escriu en català… (Enter per enviar)',
@@ -89,7 +101,7 @@ export default function App() {
     return (
       <div className="app">
         <header className="header">
-          <h1>🇪🇸 CatalanTutor</h1>
+          <h1><SenyeraFlag className="header-flag" /> CatalanTutor</h1>
           <p className="subtitle">Practica el català amb IA</p>
         </header>
         <main className="lang-selector">
@@ -119,7 +131,7 @@ export default function App() {
   return (
     <div className="app">
       <header className="header">
-        <h1>🇪🇸 CatalanTutor</h1>
+        <h1><SenyeraFlag className="header-flag" /> CatalanTutor</h1>
         <p className="subtitle">Practica el català amb IA</p>
         <button className="btn-clear" onClick={handleNewConversation}>
           Nova conversa
