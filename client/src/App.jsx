@@ -5,7 +5,7 @@ import './App.css'
 
 function SenyeraFlag({ className = '' }) {
   return (
-    <svg viewBox="0 0 270 180" xmlns="http://www.w3.org/2000/svg" className={`senyera ${className}`} aria-label="Catalan flag">
+    <svg viewBox="0 0 270 180" xmlns="http://www.w3.org/2000/svg" className={`flag-svg ${className}`} aria-label="Catalan flag">
       <rect width="270" height="180" fill="#FCDD09" />
       <rect y="20" width="270" height="20" fill="#C60B1E" />
       <rect y="60" width="270" height="20" fill="#C60B1E" />
@@ -15,10 +15,39 @@ function SenyeraFlag({ className = '' }) {
   )
 }
 
+function SpainFlag({ className = '' }) {
+  return (
+    <svg viewBox="0 0 3 2" xmlns="http://www.w3.org/2000/svg" className={`flag-svg ${className}`} aria-label="Spanish flag">
+      <rect width="3" height="2" fill="#AA151B" />
+      <rect y="0.5" width="3" height="1" fill="#F1BF00" />
+    </svg>
+  )
+}
+
+function UKFlag({ className = '' }) {
+  return (
+    <svg viewBox="0 0 60 30" xmlns="http://www.w3.org/2000/svg" className={`flag-svg ${className}`} aria-label="UK flag">
+      <rect width="60" height="30" fill="#012169" />
+      {/* White saltire */}
+      <line x1="0" y1="0" x2="60" y2="30" stroke="white" strokeWidth="7" />
+      <line x1="60" y1="0" x2="0" y2="30" stroke="white" strokeWidth="7" />
+      {/* Red saltire */}
+      <line x1="0" y1="0" x2="60" y2="30" stroke="#C8102E" strokeWidth="3.5" />
+      <line x1="60" y1="0" x2="0" y2="30" stroke="#C8102E" strokeWidth="3.5" />
+      {/* White cross */}
+      <rect x="24" y="0" width="12" height="30" fill="white" />
+      <rect x="0" y="11" width="60" height="8" fill="white" />
+      {/* Red cross */}
+      <rect x="26.5" y="0" width="7" height="30" fill="#C8102E" />
+      <rect x="0" y="12.5" width="60" height="5" fill="#C8102E" />
+    </svg>
+  )
+}
+
 const LANG_CONFIG = {
   en: {
     label: 'English',
-    flag: '🇬🇧',
+    flag: <UKFlag className="lang-btn__flag-svg" />,
     tagline: 'I speak English',
     locale: 'en-US',
     placeholder: 'Write in Catalan… (Enter to send)',
@@ -27,7 +56,7 @@ const LANG_CONFIG = {
   },
   es: {
     label: 'Español',
-    flag: '🇪🇸',
+    flag: <SpainFlag className="lang-btn__flag-svg" />,
     tagline: 'Hablo español',
     locale: 'es-ES',
     placeholder: 'Escribe en catalán… (Enter para enviar)',
