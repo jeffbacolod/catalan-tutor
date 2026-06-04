@@ -2,7 +2,11 @@ import { Router } from 'express'
 import Anthropic from '@anthropic-ai/sdk'
 
 const router = Router()
-const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY })
+let anthropic
+function getClient() {
+  if (!anthropic) anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY })
+  return anthropic
+}
 
 router.post('/chat', async (req, res) => {
   const { messages, systemPrompt } = req.body
@@ -30,7 +34,7 @@ router.post('/chat', async (req, res) => {
   }
 
   try {
-    const response = await anthropic.messages.create({
+    const response = await getClient().messages.create({
       model: 'claude-sonnet-4-6',
       max_tokens: 1024,
       system: systemPrompt,
