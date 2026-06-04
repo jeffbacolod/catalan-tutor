@@ -238,3 +238,51 @@ html, body, #root {
 }
 .btn-send:hover:not(:disabled) { background: var(--accent-dark); }
 .btn-send:disabled { opacity: 0.4; cursor: not-allowed; }
+
+/* ── Language selector ── */
+.lang-selector {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 28px;
+  padding: 40px 24px;
+}
+
+.lang-selector__prompt {
+  font-size: 1.15rem;
+  color: var(--text-muted);
+  font-weight: 500;
+}
+
+.lang-selector__grid {
+  display: flex;
+  gap: 16px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.lang-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  width: 140px;
+  padding: 24px 16px;
+  background: var(--surface);
+  border: 2px solid var(--border);
+  border-radius: var(--radius);
+  cursor: pointer;
+  transition: border-color 0.15s, background 0.15s, transform 0.1s;
+  color: var(--text);
+}
+.lang-btn:hover {
+  border-color: var(--accent);
+  background: var(--surface2);
+  transform: translateY(-2px);
+}
+
+.lang-btn__flag { font-size: 2.2rem; line-height: 1; }
+.lang-btn__label { font-size: 1rem; font-weight: 700; }
+.lang-btn__tagline { font-size: 0.78rem; color: var(--text-muted); }

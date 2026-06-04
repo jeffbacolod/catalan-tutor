@@ -3,24 +3,54 @@ import { useConversation } from './hooks/useConversation'
 import { useSpeechRecognition } from './hooks/useSpeechRecognition'
 import './App.css'
 
+const LANG_CONFIG = {
+  en: {
+    label: 'English',
+    flag: '🇬🇧',
+    tagline: 'I speak English',
+    locale: 'en-US',
+    placeholder: 'Write in Catalan… (Enter to send)',
+    listening: 'Listening…',
+    emptyHint: 'Try: "Hello, my name is [name]. Can we practice Catalan?"',
+  },
+  es: {
+    label: 'Español',
+    flag: '🇪🇸',
+    tagline: 'Hablo español',
+    locale: 'es-ES',
+    placeholder: 'Escribe en catalán… (Enter para enviar)',
+    listening: 'Escuchando…',
+    emptyHint: 'Prueba: "Hola, me llamo [nombre]. ¿Podemos practicar el catalán?"',
+  },
+  ca: {
+    label: 'Català',
+    flag: '🏴',
+    tagline: 'Parlo català',
+    locale: 'ca-ES',
+    placeholder: 'Escriu en català… (Enter per enviar)',
+    listening: 'Escoltant…',
+    emptyHint: 'Prova: "Hola, em dic [nom]. Podem practicar el català?"',
+  },
+}
+
 export default function App() {
-  const { messages, isLoading, error, sendUserMessage, clearConversation } = useConversation()
+  const [nativeLang, setNativeLang] = useState(null)
+  const lang = nativeLang ? LANG_CONFIG[nativeLang] : null
+
+  const { messages, isLoading, error, sendUserMessage, clearConversation } = useConversation(nativeLang ?? 'ca')
   const { transcript, isListening, isSupported, startListening, stopListening, clearTranscript } =
-    useSpeechRecognition()
+    useSpeechRecognition({ lang: lang?.locale ?? 'ca-ES' })
   const [inputText, setInputText] = useState('')
   const bottomRef = useRef(null)
 
-  // Keep input in sync with live transcript
   useEffect(() => {
     if (transcript) setInputText(transcript)
   }, [transcript])
 
-  // Auto-scroll to latest message
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: 'smooth' })
   }, [messages, isLoading])
 
-  // When mic stops and we have a transcript, auto-submit
   useEffect(() => {
     if (!isListening && transcript.trim()) {
       handleSubmit(transcript.trim(), 'voice')
@@ -44,11 +74,42 @@ export default function App() {
   }
 
   function toggleMic() {
-    if (isListening) {
-      stopListening()
-    } else {
-      startListening()
-    }
+    if (isListening) stopListening()
+    else startListening()
+  }
+
+  function handleNewConversation() {
+    clearConversation()
+    setNativeLang(null)
+    setInputText('')
+    clearTranscript()
+  }
+
+  if (!nativeLang) {
+    return (
+      <div className="app">
+        <header className="header">
+          <h1>🇪🇸 CatalanTutor</h1>
+          <p className="subtitle">Practica el català amb IA</p>
+        </header>
+        <main className="lang-selector">
+          <p className="lang-selector__prompt">What's your native language?</p>
+          <div className="lang-selector__grid">
+            {Object.entries(LANG_CONFIG).map(([code, cfg]) => (
+              <button
+                key={code}
+                className="lang-btn"
+                onClick={() => setNativeLang(code)}
+              >
+                <span className="lang-btn__flag">{cfg.flag}</span>
+                <span className="lang-btn__label">{cfg.label}</span>
+                <span className="lang-btn__tagline">{cfg.tagline}</span>
+              </button>
+            ))}
+          </div>
+        </main>
+      </div>
+    )
   }
 
   return (
@@ -56,18 +117,16 @@ export default function App() {
       <header className="header">
         <h1>🇪🇸 CatalanTutor</h1>
         <p className="subtitle">Practica el català amb IA</p>
-        {messages.length > 0 && (
-          <button className="btn-clear" onClick={clearConversation}>
-            Nova conversa
-          </button>
-        )}
+        <button className="btn-clear" onClick={handleNewConversation}>
+          Nova conversa
+        </button>
       </header>
 
       <main className="chat-area">
         {messages.length === 0 && (
           <div className="empty-state">
             <p>Bon dia! Comença a escriure o prem el micròfon per parlar en català.</p>
-            <p className="hint">Try: "Hola, em dic [name]. Puc practicar català contigo?"</p>
+            <p className="hint">{lang.emptyHint}</p>
           </div>
         )}
 
@@ -117,7 +176,7 @@ export default function App() {
           value={inputText}
           onChange={(e) => setInputText(e.target.value)}
           onKeyDown={handleKeyDown}
-          placeholder={isListening ? 'Escoltant…' : 'Escriu en català… (Enter per enviar)'}
+          placeholder={isListening ? lang.listening : lang.placeholder}
           disabled={isLoading}
           rows={1}
         />
@@ -135,7 +194,6 @@ export default function App() {
 }
 
 function renderAssistantMessage(content) {
-  // Split off the correction line so it can be styled differently
   const correctionMatch = content.split(/(✏️ Correcció:.*)$/s)
   if (correctionMatch.length < 2) return <p>{content}</p>
   return (
