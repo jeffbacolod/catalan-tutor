@@ -251,9 +251,11 @@ html, body, #root {
 }
 
 .lang-selector__prompt {
-  font-size: 1.15rem;
+  font-size: 1rem;
   color: var(--text-muted);
   font-weight: 500;
+  text-align: center;
+  line-height: 1.9;
 }
 
 .lang-selector__grid {

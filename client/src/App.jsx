@@ -24,7 +24,7 @@ const LANG_CONFIG = {
   },
   ca: {
     label: 'Català',
-    flag: '🏴',
+    flag: '🏴󠁥󠁳󠁣󠁴󠁿',
     tagline: 'Parlo català',
     locale: 'ca-ES',
     placeholder: 'Escriu en català… (Enter per enviar)',
@@ -93,7 +93,11 @@ export default function App() {
           <p className="subtitle">Practica el català amb IA</p>
         </header>
         <main className="lang-selector">
-          <p className="lang-selector__prompt">What's your native language?</p>
+          <p className="lang-selector__prompt">
+            What's your native language?<br />
+            ¿Cuál es tu idioma nativo?<br />
+            Quina és la teva llengua materna?
+          </p>
           <div className="lang-selector__grid">
             {Object.entries(LANG_CONFIG).map(([code, cfg]) => (
               <button
