@@ -1,32 +1,32 @@
-// Wraps the browser Web Speech API (SpeechRecognition).
-// Returns { transcript, isListening, startListening, stopListening, error }.
-// No external library — browser-native only.
-
 import { useState, useEffect, useRef, useCallback } from 'react'
 
 export function useSpeechRecognition({ lang = 'ca-ES' } = {}) {
   const [transcript, setTranscript] = useState('')
   const [isListening, setIsListening] = useState(false)
   const [error, setError] = useState(null)
+  const [isSupported, setIsSupported] = useState(true)
   const recognitionRef = useRef(null)
 
   useEffect(() => {
     const SpeechRecognition =
       window.SpeechRecognition || window.webkitSpeechRecognition
     if (!SpeechRecognition) {
-      setError('SpeechRecognition is not supported in this browser.')
+      setIsSupported(false)
       return
     }
+
     const recognition = new SpeechRecognition()
     recognition.lang = lang
-    recognition.interimResults = false
+    recognition.interimResults = true
     recognition.maxAlternatives = 1
+    recognition.continuous = false
 
     recognition.onresult = (event) => {
-      setTranscript(event.results[0][0].transcript)
+      const result = event.results[event.results.length - 1]
+      setTranscript(result[0].transcript)
     }
     recognition.onerror = (event) => {
-      setError(event.error)
+      if (event.error !== 'aborted') setError(event.error)
       setIsListening(false)
     }
     recognition.onend = () => setIsListening(false)
@@ -35,10 +35,15 @@ export function useSpeechRecognition({ lang = 'ca-ES' } = {}) {
   }, [lang])
 
   const startListening = useCallback(() => {
+    if (!recognitionRef.current) return
     setTranscript('')
     setError(null)
-    recognitionRef.current?.start()
-    setIsListening(true)
+    try {
+      recognitionRef.current.start()
+      setIsListening(true)
+    } catch {
+      // already started — ignore
+    }
   }, [])
 
   const stopListening = useCallback(() => {
@@ -46,5 +51,7 @@ export function useSpeechRecognition({ lang = 'ca-ES' } = {}) {
     setIsListening(false)
   }, [])
 
-  return { transcript, isListening, startListening, stopListening, error }
+  const clearTranscript = useCallback(() => setTranscript(''), [])
+
+  return { transcript, isListening, isSupported, startListening, stopListening, clearTranscript, error }
 }

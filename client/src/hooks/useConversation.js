@@ -1,40 +1,23 @@
-// Manages the full conversation state: message history, loading state, and
-// the orchestration between Claude (AI response), ElevenLabs (TTS), and D-ID (avatar).
-
 import { useState, useCallback } from 'react'
 import { sendMessage } from '../services/claudeService'
-import { synthesizeSpeech } from '../services/elevenLabsService'
-import { createTalkStream } from '../services/didService'
 
-const SYSTEM_PROMPT = `You are a friendly Catalan language tutor.
-Respond exclusively in Catalan unless the student asks for an English explanation.
-Keep responses concise and encouraging.`
+const SYSTEM_PROMPT = `You are a friendly Catalan language tutor. Always respond in Catalan. After each response, if the user made a grammar or vocabulary mistake, add a brief gentle correction introduced by "✏️ Correcció:" followed by the correction in Catalan. Keep responses short and conversational.`
 
 export function useConversation() {
   const [messages, setMessages] = useState([])
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState(null)
-  const [avatarStream, setAvatarStream] = useState(null)
 
   const sendUserMessage = useCallback(async (text) => {
     const userMessage = { role: 'user', content: text }
-    const updatedMessages = [...messages, userMessage]
-    setMessages(updatedMessages)
+    const next = [...messages, userMessage]
+    setMessages(next)
     setIsLoading(true)
     setError(null)
 
     try {
-      const { reply } = await sendMessage([
-        { role: 'system', content: SYSTEM_PROMPT },
-        ...updatedMessages,
-      ])
-
-      const assistantMessage = { role: 'assistant', content: reply }
-      setMessages((prev) => [...prev, assistantMessage])
-
-      const audioUrl = await synthesizeSpeech(reply)
-      const stream = await createTalkStream(null, audioUrl)
-      setAvatarStream(stream)
+      const { reply } = await sendMessage(next, SYSTEM_PROMPT)
+      setMessages((prev) => [...prev, { role: 'assistant', content: reply }])
     } catch (err) {
       setError(err.message)
     } finally {
@@ -44,9 +27,8 @@ export function useConversation() {
 
   const clearConversation = useCallback(() => {
     setMessages([])
-    setAvatarStream(null)
     setError(null)
   }, [])
 
-  return { messages, isLoading, error, avatarStream, sendUserMessage, clearConversation }
+  return { messages, isLoading, error, sendUserMessage, clearConversation }
 }
