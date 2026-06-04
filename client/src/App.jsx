@@ -23,17 +23,17 @@ export default function App() {
   // When mic stops and we have a transcript, auto-submit
   useEffect(() => {
     if (!isListening && transcript.trim()) {
-      handleSubmit(transcript.trim())
+      handleSubmit(transcript.trim(), 'voice')
       clearTranscript()
     }
   }, [isListening]) // eslint-disable-line react-hooks/exhaustive-deps
 
-  function handleSubmit(text) {
+  function handleSubmit(text, inputMethod = 'text') {
     const trimmed = (text || inputText).trim()
     if (!trimmed || isLoading) return
     setInputText('')
     clearTranscript()
-    sendUserMessage(trimmed)
+    sendUserMessage(trimmed, inputMethod)
   }
 
   function handleKeyDown(e) {
