@@ -48,6 +48,7 @@ const LANG_CONFIG = {
   en: {
     label: 'English',
     flag: <UKFlag className="lang-btn__flag-svg" />,
+    speakPrompt: 'I speak…',
     nativeLocale: 'en-US',
     placeholder: 'Write in Catalan… (Enter to send)',
     listening: 'Listening…',
@@ -62,6 +63,7 @@ const LANG_CONFIG = {
   es: {
     label: 'Español',
     flag: <SpainFlag className="lang-btn__flag-svg" />,
+    speakPrompt: 'Hablo…',
     nativeLocale: 'es-ES',
     placeholder: 'Escribe en catalán… (Enter para enviar)',
     listening: 'Escuchando…',
@@ -174,19 +176,18 @@ export default function App() {
         <main className="setup-page">
 
           <section className="setup-step">
-            <p className="setup-prompt">
-              I speak… / Hablo…
-            </p>
             <div className="lang-selector__grid">
               {Object.entries(LANG_CONFIG).map(([code, cfg]) => (
-                <button
-                  key={code}
-                  className={`lang-btn ${nativeLang === code ? 'lang-btn--active' : ''}`}
-                  onClick={() => { setNativeLang(code); setLevel(null) }}
-                >
-                  <span className="lang-btn__flag">{cfg.flag}</span>
-                  <span className="lang-btn__label">{cfg.label}</span>
-                </button>
+                <div key={code} className="lang-option">
+                  <p className="lang-option__prompt">{cfg.speakPrompt}</p>
+                  <button
+                    className={`lang-btn ${nativeLang === code ? 'lang-btn--active' : ''}`}
+                    onClick={() => { setNativeLang(code); setLevel(null) }}
+                  >
+                    <span className="lang-btn__flag">{cfg.flag}</span>
+                    <span className="lang-btn__label">{cfg.label}</span>
+                  </button>
+                </div>
               ))}
             </div>
           </section>
