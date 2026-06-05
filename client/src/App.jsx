@@ -48,39 +48,40 @@ const LANG_CONFIG = {
   en: {
     label: 'English',
     flag: <UKFlag className="lang-btn__flag-svg" />,
-    tagline: null,
-    locale: 'en-US',
+    nativeLocale: 'en-US',
     placeholder: 'Write in Catalan… (Enter to send)',
     listening: 'Listening…',
     emptyHint: 'Try: "Hello, my name is [name]. Can we practice Catalan?"',
+    levelPrompt: 'Choose your level',
+    levels: {
+      beginner:  { label: 'Beginner',   desc: 'Tutor explains in English' },
+      immersion: { label: 'Immersion',  desc: 'Everything in Catalan only' },
+    },
   },
   es: {
     label: 'Español',
     flag: <SpainFlag className="lang-btn__flag-svg" />,
-    tagline: null,
-    locale: 'es-ES',
+    nativeLocale: 'es-ES',
     placeholder: 'Escribe en catalán… (Enter para enviar)',
     listening: 'Escuchando…',
     emptyHint: 'Prueba: "Hola, me llamo [nombre]. ¿Podemos practicar el catalán?"',
-  },
-  ca: {
-    label: 'Immersió',
-    flag: <SenyeraFlag className="lang-btn__flag-svg" />,
-    tagline: null,
-    locale: 'ca-ES',
-    placeholder: 'Escriu en català… (Enter per enviar)',
-    listening: 'Escoltant…',
-    emptyHint: 'Prova: "Hola, em dic [nom]. Podem practicar el català?"',
+    levelPrompt: 'Elige tu nivel',
+    levels: {
+      beginner:  { label: 'Principiante', desc: 'El tutor explica en español' },
+      immersion: { label: 'Inmersión',    desc: 'Todo en catalán' },
+    },
   },
 }
 
 export default function App() {
   const [nativeLang, setNativeLang] = useState(null)
+  const [level, setLevel] = useState(null)
   const lang = nativeLang ? LANG_CONFIG[nativeLang] : null
+  const locale = level === 'immersion' ? 'ca-ES' : (lang?.nativeLocale ?? 'ca-ES')
 
-  const { messages, isLoading, error, sendUserMessage, clearConversation } = useConversation(nativeLang ?? 'ca')
+  const { messages, isLoading, error, sendUserMessage, clearConversation } = useConversation(nativeLang ?? 'en', level ?? 'beginner')
   const { transcript, isListening, isSupported, startListening, stopListening, clearTranscript } =
-    useSpeechRecognition({ lang: lang?.locale ?? 'ca-ES' })
+    useSpeechRecognition({ lang: locale })
   const [inputText, setInputText] = useState('')
   const [isVoicePending, setIsVoicePending] = useState(false)
   const bottomRef = useRef(null)
@@ -153,6 +154,7 @@ export default function App() {
   function handleNewConversation() {
     clearConversation()
     setNativeLang(null)
+    setLevel(null)
     setInputText('')
     clearTranscript()
   }
@@ -166,9 +168,9 @@ export default function App() {
         </header>
         <main className="lang-selector">
           <p className="lang-selector__prompt">
-            Practice Catalan in…<br />
-            Practica català en…<br />
-            Practicar catalán en…
+            I speak…<br />
+            Parlo…<br />
+            Hablo…
           </p>
           <div className="lang-selector__grid">
             {Object.entries(LANG_CONFIG).map(([code, cfg]) => (
@@ -179,6 +181,36 @@ export default function App() {
               >
                 <span className="lang-btn__flag">{cfg.flag}</span>
                 <span className="lang-btn__label">{cfg.label}</span>
+              </button>
+            ))}
+          </div>
+        </main>
+      </div>
+    )
+  }
+
+  if (!level) {
+    return (
+      <div className="app">
+        <header className="header">
+          <h1><SenyeraFlag className="header-flag" /> CatalanTutor</h1>
+          <p className="subtitle">Practica el català amb IA</p>
+        </header>
+        <main className="lang-selector">
+          <p className="lang-selector__prompt">
+            Choose your level<br />
+            Tria el teu nivell<br />
+            Elige tu nivel
+          </p>
+          <div className="level-selector__grid">
+            {Object.entries(lang.levels).map(([code, cfg]) => (
+              <button
+                key={code}
+                className="level-btn"
+                onClick={() => setLevel(code)}
+              >
+                <span className="level-btn__label">{cfg.label}</span>
+                <span className="level-btn__desc">{cfg.desc}</span>
               </button>
             ))}
           </div>
