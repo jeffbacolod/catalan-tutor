@@ -53,11 +53,11 @@ const LANG_CONFIG = {
     placeholder: 'Write in Catalan… (Enter to send)',
     listening: 'Listening…',
     emptyHint: 'Try: "Hello, my name is [name]. Can we practice Catalan?"',
-    levelPrompt: 'Choose your level',
+    levelPrompt: 'My tutor explains in…',
     continueLabel: 'Continue',
     levels: {
-      beginner:  { label: 'Beginner',   desc: 'Tutor explains in English' },
-      immersion: { label: 'Immersion',  desc: 'Everything in Catalan only' },
+      beginner:  { label: 'English',           flag: <UKFlag className="lang-btn__flag-svg" /> },
+      immersion: { label: 'Català (Immersió)', flag: <SenyeraFlag className="lang-btn__flag-svg" /> },
     },
   },
   es: {
@@ -68,11 +68,11 @@ const LANG_CONFIG = {
     placeholder: 'Escribe en catalán… (Enter para enviar)',
     listening: 'Escuchando…',
     emptyHint: 'Prueba: "Hola, me llamo [nombre]. ¿Podemos practicar el catalán?"',
-    levelPrompt: 'Elige tu nivel',
+    levelPrompt: 'Mi tutor explica en…',
     continueLabel: 'Continuar',
     levels: {
-      beginner:  { label: 'Principiante', desc: 'El tutor explica en español' },
-      immersion: { label: 'Inmersión',    desc: 'Todo en catalán' },
+      beginner:  { label: 'Español',           flag: <SpainFlag className="lang-btn__flag-svg" /> },
+      immersion: { label: 'Català (Immersió)', flag: <SenyeraFlag className="lang-btn__flag-svg" /> },
     },
   },
 }
@@ -195,15 +195,15 @@ export default function App() {
           {nativeLang && (
             <section className="setup-step setup-step--reveal" key={nativeLang}>
               <p className="setup-prompt">{lang.levelPrompt}</p>
-              <div className="level-selector__grid">
+              <div className="lang-selector__grid">
                 {Object.entries(lang.levels).map(([code, cfg]) => (
                   <button
                     key={code}
-                    className={`level-btn ${level === code ? 'level-btn--active' : ''}`}
+                    className={`lang-btn ${level === code ? 'lang-btn--active' : ''}`}
                     onClick={() => setLevel(code)}
                   >
-                    <span className="level-btn__label">{cfg.label}</span>
-                    <span className="level-btn__desc">{cfg.desc}</span>
+                    <span className="lang-btn__flag">{cfg.flag}</span>
+                    <span className="lang-btn__label">{cfg.label}</span>
                   </button>
                 ))}
               </div>
