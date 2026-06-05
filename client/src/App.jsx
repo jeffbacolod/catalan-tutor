@@ -193,6 +193,10 @@ export default function App() {
           </section>
 
           {nativeLang && (
+            <hr className="setup-divider" />
+          )}
+
+          {nativeLang && (
             <section className="setup-step setup-step--reveal" key={nativeLang}>
               <p className="setup-prompt">{lang.levelPrompt}</p>
               <div className="lang-selector__grid">
