@@ -4,19 +4,27 @@ import { sendMessage } from '../services/claudeService'
 const CORRECTION_VOICE = `Focus corrections on grammar and vocabulary only — do not correct spelling or accent marks, since the message was spoken aloud.`
 const CORRECTION_TEXT = `Correct everything including spelling and accent marks, since the message was typed.`
 
-function buildSystemPrompt(inputMethod, nativeLang, level) {
+// Four combinations of (nativeLang, explanationLang):
+//   en + en  → respond in Catalan, explain corrections in simple English
+//   en + ca  → full Catalan immersion, never use English
+//   es + es  → respond in Catalan, explain corrections in simple Spanish
+//   es + ca  → full Catalan immersion, never use Spanish
+function buildSystemPrompt(inputMethod, nativeLang, explanationLang) {
   const correctionScope = inputMethod === 'voice' ? CORRECTION_VOICE : CORRECTION_TEXT
 
-  const base = level === 'immersion'
-    ? `You are a friendly Catalan language tutor in full immersion mode. Always respond exclusively in Catalan — never use English or Spanish. After each response, if the user made a mistake, add a brief gentle correction introduced by "✏️ Correcció:" in Catalan only. Keep responses short and conversational.`
-    : nativeLang === 'en'
-    ? `You are a friendly Catalan language tutor for a native English speaker. Always respond in Catalan. After each response, if the user made a mistake, add a brief gentle correction introduced by "✏️ Correcció:" and explain the correction in English so the user understands it. Keep responses short and conversational.`
-    : `You are a friendly Catalan language tutor for a native Spanish speaker. Always respond in Catalan. After each response, if the user made a mistake, add a brief gentle correction introduced by "✏️ Correcció:" and explain the correction in Spanish so the user understands it. Keep responses short and conversational.`
+  let base
+  if (explanationLang === 'ca') {
+    base = `You are a friendly Catalan language tutor in full immersion mode. Always respond exclusively in Catalan — never use English or Spanish under any circumstances. After each response, if the user made a mistake, add a brief gentle correction introduced by "✏️ Correcció:" written entirely in Catalan. Keep responses short and conversational.`
+  } else if (nativeLang === 'en') {
+    base = `You are a friendly Catalan language tutor for a native English speaker. Always respond in Catalan. After each response, if the user made a mistake, add a brief gentle correction introduced by "✏️ Correcció:" and explain the correction in simple, plain English so it is easy to understand. Keep responses short and conversational.`
+  } else {
+    base = `You are a friendly Catalan language tutor for a native Spanish speaker. Always respond in Catalan. After each response, if the user made a mistake, add a brief gentle correction introduced by "✏️ Correcció:" and explain the correction in simple, plain Spanish so it is easy to understand. Keep responses short and conversational.`
+  }
 
   return `${base} ${correctionScope}`
 }
 
-export function useConversation(nativeLang = 'en', level = 'beginner') {
+export function useConversation(nativeLang = 'en', explanationLang = 'en') {
   const [messages, setMessages] = useState([])
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState(null)
@@ -29,14 +37,14 @@ export function useConversation(nativeLang = 'en', level = 'beginner') {
     setError(null)
 
     try {
-      const { reply } = await sendMessage(next, buildSystemPrompt(inputMethod, nativeLang, level))
+      const { reply } = await sendMessage(next, buildSystemPrompt(inputMethod, nativeLang, explanationLang))
       setMessages((prev) => [...prev, { role: 'assistant', content: reply }])
     } catch (err) {
       setError(err.message)
     } finally {
       setIsLoading(false)
     }
-  }, [messages, nativeLang, level])
+  }, [messages, nativeLang, explanationLang])
 
   const clearConversation = useCallback(() => {
     setMessages([])
