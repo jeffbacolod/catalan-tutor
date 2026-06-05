@@ -53,11 +53,11 @@ const LANG_CONFIG = {
     placeholder: 'Write in Catalan… (Enter to send)',
     listening: 'Listening…',
     emptyHint: 'Try: "Hello, my name is [name]. Can we practice Catalan?"',
-    levelPrompt: 'My tutor explains in…',
+    levelPrompt: 'When I make mistakes, explain in…',
     continueLabel: 'Continue',
     levels: {
       beginner:  { label: 'English',           flag: <UKFlag className="lang-btn__flag-svg" /> },
-      immersion: { label: 'Català (Immersió)', flag: <SenyeraFlag className="lang-btn__flag-svg" /> },
+      immersion: { label: 'Català', flag: <SenyeraFlag className="lang-btn__flag-svg" /> },
     },
   },
   es: {
@@ -68,11 +68,11 @@ const LANG_CONFIG = {
     placeholder: 'Escribe en catalán… (Enter para enviar)',
     listening: 'Escuchando…',
     emptyHint: 'Prueba: "Hola, me llamo [nombre]. ¿Podemos practicar el catalán?"',
-    levelPrompt: 'Mi tutor explica en…',
+    levelPrompt: 'Cuando cometa errores, explica en…',
     continueLabel: 'Continuar',
     levels: {
       beginner:  { label: 'Español',           flag: <SpainFlag className="lang-btn__flag-svg" /> },
-      immersion: { label: 'Català (Immersió)', flag: <SenyeraFlag className="lang-btn__flag-svg" /> },
+      immersion: { label: 'Català', flag: <SenyeraFlag className="lang-btn__flag-svg" /> },
     },
   },
 }
