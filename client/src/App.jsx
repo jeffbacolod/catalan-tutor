@@ -86,11 +86,10 @@ export default function App() {
   // explanationLang: the language corrections are written in — either the user's native
   // language ('en'/'es') for beginner mode, or 'ca' for full Catalan immersion
   const explanationLang = level === 'immersion' ? 'ca' : (nativeLang ?? 'en')
-  const locale = lang?.nativeLocale ?? 'en-US'
 
   const { messages, isLoading, error, sendUserMessage, clearConversation } = useConversation(nativeLang ?? 'en', explanationLang)
   const { transcript, isListening, isSupported, startListening, stopListening, clearTranscript } =
-    useSpeechRecognition({ lang: locale })
+    useSpeechRecognition({ lang: 'ca-ES' })
   const { speak, stop: stopTTS } = useTTS()
   const [inputText, setInputText] = useState('')
   const bottomRef = useRef(null)
