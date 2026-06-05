@@ -175,7 +175,7 @@ export default function App() {
 
           <section className="setup-step">
             <p className="setup-prompt">
-              I speak… / Parlo… / Hablo…
+              I speak… / Hablo…
             </p>
             <div className="lang-selector__grid">
               {Object.entries(LANG_CONFIG).map(([code, cfg]) => (
