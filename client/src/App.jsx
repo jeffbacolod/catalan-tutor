@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from 'react'
 import { useConversation } from './hooks/useConversation'
 import { useSpeechRecognition } from './hooks/useSpeechRecognition'
+import { useTTS } from './hooks/useTTS'
 import './App.css'
 
 function SenyeraFlag({ className = '' }) {
@@ -90,6 +91,7 @@ export default function App() {
   const { messages, isLoading, error, sendUserMessage, clearConversation } = useConversation(nativeLang ?? 'en', explanationLang)
   const { transcript, isListening, isSupported, startListening, stopListening, clearTranscript } =
     useSpeechRecognition({ lang: locale })
+  const { speak, stop: stopTTS } = useTTS()
   const [inputText, setInputText] = useState('')
   const bottomRef = useRef(null)
 
@@ -100,6 +102,12 @@ export default function App() {
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: 'smooth' })
   }, [messages, isLoading])
+
+  // Autoplay TTS for each new assistant message
+  useEffect(() => {
+    const last = messages[messages.length - 1]
+    if (last?.role === 'assistant') speak(last.content)
+  }, [messages]) // eslint-disable-line react-hooks/exhaustive-deps
 
   // When mic stops and we have a transcript, auto-submit (hook already debounced 2.5s)
   useEffect(() => {
@@ -133,6 +141,7 @@ export default function App() {
   }
 
   function handleNewConversation() {
+    stopTTS()
     clearConversation()
     setNativeLang(null)
     setLevel(null)

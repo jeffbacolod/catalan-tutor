@@ -1,14 +1,11 @@
-// Requests TTS audio from the backend /api/elevenlabs proxy.
-// Returns an audio blob URL suitable for HTMLAudioElement playback.
-
-export async function synthesizeSpeech(text, voiceId) {
+export async function synthesizeSpeech(text) {
   const response = await fetch('/api/elevenlabs/tts', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ text, voiceId }),
+    body: JSON.stringify({ text }),
   })
   if (!response.ok) {
-    throw new Error(`ElevenLabs API error: ${response.statusText}`)
+    throw new Error(`ElevenLabs TTS error: ${response.statusText}`)
   }
   const blob = await response.blob()
   return URL.createObjectURL(blob)
