@@ -169,11 +169,30 @@ html, body, #root {
 /* ── Input area ── */
 .input-area {
   border-top: 1px solid var(--border);
-  padding: 14px 16px;
+  padding: 10px 16px 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  background: var(--surface);
+}
+
+.input-row {
   display: flex;
   align-items: flex-end;
   gap: 10px;
-  background: var(--surface);
+}
+
+.voice-status {
+  font-size: 0.78rem;
+  color: var(--text-muted);
+  text-align: center;
+  padding: 2px 0;
+  animation: fade-in 0.15s ease;
+}
+
+@keyframes fade-in {
+  from { opacity: 0; transform: translateY(-4px); }
+  to   { opacity: 1; transform: translateY(0); }
 }
 
 .btn-mic {
@@ -196,6 +215,11 @@ html, body, #root {
   background: rgba(224, 82, 82, 0.15);
   box-shadow: 0 0 0 4px rgba(224, 82, 82, 0.15);
   animation: pulse 1.5s infinite;
+}
+.btn-mic--pending {
+  border-color: #f0b429;
+  background: rgba(240, 180, 41, 0.15);
+  box-shadow: 0 0 0 4px rgba(240, 180, 41, 0.12);
 }
 .btn-mic--disabled { opacity: 0.35; cursor: not-allowed; }
 

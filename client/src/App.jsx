@@ -82,7 +82,9 @@ export default function App() {
   const { transcript, isListening, isSupported, startListening, stopListening, clearTranscript } =
     useSpeechRecognition({ lang: lang?.locale ?? 'ca-ES' })
   const [inputText, setInputText] = useState('')
+  const [isVoicePending, setIsVoicePending] = useState(false)
   const bottomRef = useRef(null)
+  const voiceTimerRef = useRef(null)
 
   useEffect(() => {
     if (transcript) setInputText(transcript)
@@ -92,12 +94,23 @@ export default function App() {
     bottomRef.current?.scrollIntoView({ behavior: 'smooth' })
   }, [messages, isLoading])
 
+  // When mic stops and we have a transcript, wait 2.5s before auto-submitting
   useEffect(() => {
     if (!isListening && transcript.trim()) {
-      handleSubmit(transcript.trim(), 'voice')
-      clearTranscript()
+      setIsVoicePending(true)
+      voiceTimerRef.current = setTimeout(() => {
+        setIsVoicePending(false)
+        handleSubmit(transcript.trim(), 'voice')
+        clearTranscript()
+      }, 2500)
     }
+    return () => clearTimeout(voiceTimerRef.current)
   }, [isListening]) // eslint-disable-line react-hooks/exhaustive-deps
+
+  function cancelVoicePending() {
+    clearTimeout(voiceTimerRef.current)
+    setIsVoicePending(false)
+  }
 
   function handleSubmit(text, inputMethod = 'text') {
     const trimmed = (text || inputText).trim()
@@ -107,16 +120,34 @@ export default function App() {
     sendUserMessage(trimmed, inputMethod)
   }
 
+  function handleSendVoice() {
+    cancelVoicePending()
+    const trimmed = inputText.trim()
+    if (!trimmed || isLoading) return
+    setInputText('')
+    clearTranscript()
+    sendUserMessage(trimmed, 'voice')
+  }
+
   function handleKeyDown(e) {
     if (e.key === 'Enter' && !e.shiftKey) {
       e.preventDefault()
-      handleSubmit()
+      isVoicePending ? handleSendVoice() : handleSubmit()
     }
   }
 
   function toggleMic() {
-    if (isListening) stopListening()
-    else startListening()
+    if (isVoicePending) {
+      // Cancel pending submit and resume recording
+      cancelVoicePending()
+      clearTranscript()
+      setInputText('')
+      startListening()
+    } else if (isListening) {
+      stopListening()
+    } else {
+      startListening()
+    }
   }
 
   function handleNewConversation() {
@@ -207,32 +238,44 @@ export default function App() {
       </main>
 
       <footer className="input-area">
-        <button
-          className={`btn-mic ${isListening ? 'btn-mic--active' : ''} ${!isSupported ? 'btn-mic--disabled' : ''}`}
-          onClick={toggleMic}
-          disabled={!isSupported || isLoading}
-          title={!isSupported ? 'Speech recognition not supported in this browser' : isListening ? 'Stop listening' : 'Start listening'}
-        >
-          {isListening ? '⏹' : '🎙'}
-        </button>
+        {isVoicePending && (
+          <div className="voice-status">
+            <span>Sending in 2s — tap 🎙 to keep speaking</span>
+          </div>
+        )}
+        <div className="input-row">
+          <button
+            className={`btn-mic ${isListening ? 'btn-mic--active' : ''} ${isVoicePending ? 'btn-mic--pending' : ''} ${!isSupported ? 'btn-mic--disabled' : ''}`}
+            onClick={toggleMic}
+            disabled={!isSupported || isLoading}
+            title={
+              !isSupported ? 'Speech recognition not supported in this browser'
+              : isVoicePending ? 'Tap to keep speaking'
+              : isListening ? 'Stop listening'
+              : 'Start listening'
+            }
+          >
+            {isListening ? '⏹' : '🎙'}
+          </button>
 
-        <textarea
-          className="text-input"
-          value={inputText}
-          onChange={(e) => setInputText(e.target.value)}
-          onKeyDown={handleKeyDown}
-          placeholder={isListening ? lang.listening : lang.placeholder}
-          disabled={isLoading}
-          rows={1}
-        />
+          <textarea
+            className="text-input"
+            value={inputText}
+            onChange={(e) => { cancelVoicePending(); setInputText(e.target.value) }}
+            onKeyDown={handleKeyDown}
+            placeholder={isListening ? lang.listening : lang.placeholder}
+            disabled={isLoading}
+            rows={1}
+          />
 
-        <button
-          className="btn-send"
-          onClick={() => handleSubmit()}
-          disabled={!inputText.trim() || isLoading}
-        >
-          Enviar
-        </button>
+          <button
+            className="btn-send"
+            onClick={() => isVoicePending ? handleSendVoice() : handleSubmit()}
+            disabled={!inputText.trim() || isLoading}
+          >
+            Enviar
+          </button>
+        </div>
       </footer>
     </div>
   )
