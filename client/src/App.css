@@ -263,7 +263,42 @@ html, body, #root {
 .btn-send:hover:not(:disabled) { background: var(--accent-dark); }
 .btn-send:disabled { opacity: 0.4; cursor: not-allowed; }
 
-/* ── Language selector ── */
+/* ── Setup page (single-page onboarding) ── */
+.setup-page {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 36px;
+  padding: 40px 24px;
+}
+
+.setup-step {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+  width: 100%;
+}
+
+.setup-step--reveal {
+  animation: reveal 0.25s ease both;
+}
+
+@keyframes reveal {
+  from { opacity: 0; transform: translateY(10px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.setup-prompt {
+  font-size: 1rem;
+  color: var(--text-muted);
+  font-weight: 500;
+  text-align: center;
+}
+
+/* ── Language selector (kept for grid layout) ── */
 .lang-selector {
   flex: 1;
   display: flex;
@@ -308,6 +343,10 @@ html, body, #root {
   background: var(--surface2);
   transform: translateY(-2px);
 }
+.lang-btn--active {
+  border-color: var(--accent);
+  background: var(--surface2);
+}
 
 .lang-btn__flag { font-size: 2.2rem; line-height: 1; }
 
@@ -345,6 +384,25 @@ html, body, #root {
   background: var(--surface2);
   transform: translateY(-2px);
 }
+.level-btn--active {
+  border-color: var(--accent);
+  background: var(--surface2);
+}
 
 .level-btn__label { font-size: 1rem; font-weight: 700; }
 .level-btn__desc  { font-size: 0.82rem; color: var(--text-muted); }
+
+/* ── Continue button ── */
+.btn-continue {
+  padding: 12px 32px;
+  background: var(--accent);
+  color: #fff;
+  border: none;
+  border-radius: var(--radius-sm);
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s, transform 0.1s;
+  animation: reveal 0.2s ease both;
+}
+.btn-continue:hover { background: var(--accent-dark); transform: translateY(-1px); }

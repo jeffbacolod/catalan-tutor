@@ -53,6 +53,7 @@ const LANG_CONFIG = {
     listening: 'Listening…',
     emptyHint: 'Try: "Hello, my name is [name]. Can we practice Catalan?"',
     levelPrompt: 'Choose your level',
+    continueLabel: 'Continue',
     levels: {
       beginner:  { label: 'Beginner',   desc: 'Tutor explains in English' },
       immersion: { label: 'Immersion',  desc: 'Everything in Catalan only' },
@@ -66,6 +67,7 @@ const LANG_CONFIG = {
     listening: 'Escuchando…',
     emptyHint: 'Prueba: "Hola, me llamo [nombre]. ¿Podemos practicar el catalán?"',
     levelPrompt: 'Elige tu nivel',
+    continueLabel: 'Continuar',
     levels: {
       beginner:  { label: 'Principiante', desc: 'El tutor explica en español' },
       immersion: { label: 'Inmersión',    desc: 'Todo en catalán' },
@@ -76,6 +78,7 @@ const LANG_CONFIG = {
 export default function App() {
   const [nativeLang, setNativeLang] = useState(null)
   const [level, setLevel] = useState(null)
+  const [started, setStarted] = useState(false)
   const lang = nativeLang ? LANG_CONFIG[nativeLang] : null
   const locale = level === 'immersion' ? 'ca-ES' : (lang?.nativeLocale ?? 'ca-ES')
 
@@ -155,65 +158,63 @@ export default function App() {
     clearConversation()
     setNativeLang(null)
     setLevel(null)
+    setStarted(false)
     setInputText('')
     clearTranscript()
+    cancelVoicePending()
   }
 
-  if (!nativeLang) {
+  if (!started) {
     return (
       <div className="app">
         <header className="header">
           <h1><SenyeraFlag className="header-flag" /> CatalanTutor</h1>
           <p className="subtitle">Practica el català amb IA</p>
         </header>
-        <main className="lang-selector">
-          <p className="lang-selector__prompt">
-            I speak…<br />
-            Parlo…<br />
-            Hablo…
-          </p>
-          <div className="lang-selector__grid">
-            {Object.entries(LANG_CONFIG).map(([code, cfg]) => (
-              <button
-                key={code}
-                className="lang-btn"
-                onClick={() => setNativeLang(code)}
-              >
-                <span className="lang-btn__flag">{cfg.flag}</span>
-                <span className="lang-btn__label">{cfg.label}</span>
-              </button>
-            ))}
-          </div>
-        </main>
-      </div>
-    )
-  }
+        <main className="setup-page">
 
-  if (!level) {
-    return (
-      <div className="app">
-        <header className="header">
-          <h1><SenyeraFlag className="header-flag" /> CatalanTutor</h1>
-          <p className="subtitle">Practica el català amb IA</p>
-        </header>
-        <main className="lang-selector">
-          <p className="lang-selector__prompt">
-            Choose your level<br />
-            Tria el teu nivell<br />
-            Elige tu nivel
-          </p>
-          <div className="level-selector__grid">
-            {Object.entries(lang.levels).map(([code, cfg]) => (
-              <button
-                key={code}
-                className="level-btn"
-                onClick={() => setLevel(code)}
-              >
-                <span className="level-btn__label">{cfg.label}</span>
-                <span className="level-btn__desc">{cfg.desc}</span>
-              </button>
-            ))}
-          </div>
+          <section className="setup-step">
+            <p className="setup-prompt">
+              I speak… / Parlo… / Hablo…
+            </p>
+            <div className="lang-selector__grid">
+              {Object.entries(LANG_CONFIG).map(([code, cfg]) => (
+                <button
+                  key={code}
+                  className={`lang-btn ${nativeLang === code ? 'lang-btn--active' : ''}`}
+                  onClick={() => { setNativeLang(code); setLevel(null) }}
+                >
+                  <span className="lang-btn__flag">{cfg.flag}</span>
+                  <span className="lang-btn__label">{cfg.label}</span>
+                </button>
+              ))}
+            </div>
+          </section>
+
+          {nativeLang && (
+            <section className="setup-step setup-step--reveal" key={nativeLang}>
+              <p className="setup-prompt">{lang.levelPrompt}</p>
+              <div className="level-selector__grid">
+                {Object.entries(lang.levels).map(([code, cfg]) => (
+                  <button
+                    key={code}
+                    className={`level-btn ${level === code ? 'level-btn--active' : ''}`}
+                    onClick={() => setLevel(code)}
+                  >
+                    <span className="level-btn__label">{cfg.label}</span>
+                    <span className="level-btn__desc">{cfg.desc}</span>
+                  </button>
+                ))}
+              </div>
+            </section>
+          )}
+
+          {nativeLang && level && (
+            <button className="btn-continue" onClick={() => setStarted(true)}>
+              {lang.continueLabel} →
+            </button>
+          )}
+
         </main>
       </div>
     )
