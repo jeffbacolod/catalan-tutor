@@ -315,4 +315,3 @@ html, body, #root {
 .header-flag { width: 30px; height: 20px; margin-right: 6px; position: relative; top: -1px; }
 .lang-btn__flag-svg { width: 54px; height: 36px; display: block; }
 .lang-btn__label { font-size: 1rem; font-weight: 700; }
-.lang-btn__tagline { font-size: 0.78rem; color: var(--text-muted); }

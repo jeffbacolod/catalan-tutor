@@ -48,7 +48,7 @@ const LANG_CONFIG = {
   en: {
     label: 'English',
     flag: <UKFlag className="lang-btn__flag-svg" />,
-    tagline: 'I speak English',
+    tagline: null,
     locale: 'en-US',
     placeholder: 'Write in Catalan… (Enter to send)',
     listening: 'Listening…',
@@ -57,16 +57,16 @@ const LANG_CONFIG = {
   es: {
     label: 'Español',
     flag: <SpainFlag className="lang-btn__flag-svg" />,
-    tagline: 'Hablo español',
+    tagline: null,
     locale: 'es-ES',
     placeholder: 'Escribe en catalán… (Enter para enviar)',
     listening: 'Escuchando…',
     emptyHint: 'Prueba: "Hola, me llamo [nombre]. ¿Podemos practicar el catalán?"',
   },
   ca: {
-    label: 'Català',
+    label: 'Immersió',
     flag: <SenyeraFlag className="lang-btn__flag-svg" />,
-    tagline: 'Parlo català',
+    tagline: null,
     locale: 'ca-ES',
     placeholder: 'Escriu en català… (Enter per enviar)',
     listening: 'Escoltant…',
@@ -166,9 +166,9 @@ export default function App() {
         </header>
         <main className="lang-selector">
           <p className="lang-selector__prompt">
-            What's your native language?<br />
-            ¿Cuál es tu idioma nativo?<br />
-            Quina és la teva llengua materna?
+            Practice Catalan in…<br />
+            Practica català en…<br />
+            Practicar catalán en…
           </p>
           <div className="lang-selector__grid">
             {Object.entries(LANG_CONFIG).map(([code, cfg]) => (
@@ -179,7 +179,6 @@ export default function App() {
               >
                 <span className="lang-btn__flag">{cfg.flag}</span>
                 <span className="lang-btn__label">{cfg.label}</span>
-                <span className="lang-btn__tagline">{cfg.tagline}</span>
               </button>
             ))}
           </div>
